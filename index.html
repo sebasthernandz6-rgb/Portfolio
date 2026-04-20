@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>rubstrike — Web Developer & AI Solutions</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080809;
+    --surface: #111114;
+    --card: #17171c;
+    --border: #222228;
+    --accent: #c8f135;
+    --accent-dim: rgba(200,241,53,0.1);
+    --white: #eeeef0;
+    --muted: #666672;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* NOISE overlay */
+  body::before {
+    content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.4;
+  }
+
+  .wrap { position:relative; z-index:1; max-width:900px; margin:0 auto; padding:0 2rem; }
+
+  /* NAV */
+  nav {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 1.1rem 2.5rem;
+    background: rgba(8,8,9,0.8);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem; letter-spacing: 0.15em; color: var(--accent);
+  }
+
+  .nav-links { display:flex; gap:1.8rem; align-items:center; }
+  .nav-links a {
+    font-size: 0.78rem; letter-spacing:0.08em; text-transform:uppercase;
+    color: var(--muted); text-decoration:none; transition:color 0.2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+
+  .nav-cta {
+    background: var(--accent); color: var(--bg);
+    font-size: 0.76rem; font-weight:500; letter-spacing:0.08em; text-transform:uppercase;
+    padding: 0.5rem 1.1rem; text-decoration:none; transition:opacity 0.2s;
+  }
+  .nav-cta:hover { opacity:0.85; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh; display:flex; align-items:center;
+    padding: 8rem 0 5rem;
+  }
+
+  .hero-inner { max-width: 700px; }
+
+  .hero-tag {
+    display:inline-flex; align-items:center; gap:0.6rem;
+    border: 1px solid var(--border);
+    font-size: 0.72rem; letter-spacing:0.15em; text-transform:uppercase;
+    color: var(--muted); padding: 0.35rem 0.9rem; margin-bottom: 2rem;
+    opacity:0; animation: up 0.5s 0.1s forwards;
+  }
+
+  .hero-tag span {
+    width:6px; height:6px; border-radius:50%; background:var(--accent);
+    animation: blink 2s infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 9vw, 7.5rem);
+    line-height: 0.93; letter-spacing: 0.02em;
+    opacity:0; animation: up 0.5s 0.2s forwards;
+  }
+
+  h1 em { color: var(--accent); font-style:normal; }
+
+  .hero-sub {
+    margin-top: 1.8rem; font-size: 1rem; line-height:1.75;
+    color: var(--muted); max-width: 460px;
+    opacity:0; animation: up 0.5s 0.35s forwards;
+  }
+
+  .hero-btns {
+    margin-top: 2.5rem; display:flex; gap:1rem; flex-wrap:wrap;
+    opacity:0; animation: up 0.5s 0.45s forwards;
+  }
+
+  .btn-primary {
+    background: var(--accent); color: var(--bg);
+    border:none; padding: 0.85rem 2rem;
+    font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:500;
+    letter-spacing:0.08em; text-transform:uppercase; cursor:pointer;
+    text-decoration:none; transition:opacity 0.2s;
+  }
+  .btn-primary:hover { opacity:0.85; }
+
+  .btn-ghost {
+    background:transparent; color:var(--white);
+    border:1px solid var(--border); padding:0.85rem 2rem;
+    font-family:'DM Sans',sans-serif; font-size:0.85rem;
+    letter-spacing:0.08em; text-transform:uppercase; cursor:pointer;
+    text-decoration:none; transition:border-color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* DIVIDER */
+  .divider {
+    height:1px; background: var(--border); margin: 0;
+  }
+
+  /* SECTION */
+  section { padding: 5rem 0; }
+
+  .sec-label {
+    font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase;
+    color: var(--accent); margin-bottom:0.8rem;
+  }
+
+  .sec-title {
+    font-family:'Bebas Neue', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height:1; letter-spacing:0.03em; margin-bottom:2.5rem;
+  }
+
+  /* DEMOS GRID */
+  .demos-grid {
+    display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+    gap:1px; background: var(--border); border:1px solid var(--border);
+  }
+
+  .demo-card {
+    background: var(--card); padding: 1.8rem;
+    display:flex; flex-direction:column; gap:0.8rem;
+    text-decoration:none; color:var(--white);
+    position:relative; overflow:hidden;
+    transition:background 0.2s;
+  }
+
+  .demo-card::after {
+    content:''; position:absolute; bottom:0; left:0;
+    height:2px; width:0; background:var(--accent);
+    transition:width 0.3s;
+  }
+
+  .demo-card:hover { background: #1e1e25; }
+  .demo-card:hover::after { width:100%; }
+
+  .demo-tag {
+    display:inline-block;
+    font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--accent); border:1px solid rgba(200,241,53,0.25);
+    padding:0.2rem 0.6rem; align-self:flex-start;
+  }
+
+  .demo-name {
+    font-family:'Bebas Neue',sans-serif;
+    font-size:1.5rem; letter-spacing:0.05em;
+  }
+
+  .demo-desc { font-size:0.82rem; color:var(--muted); line-height:1.6; }
+
+  .demo-link {
+    margin-top:auto; font-size:0.78rem; color:var(--accent);
+    letter-spacing:0.05em;
+  }
+
+  /* SERVICES */
+  .services-list { display:flex; flex-direction:column; gap:0; border:1px solid var(--border); }
+
+  .service-row {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:1.4rem 1.6rem; border-bottom:1px solid var(--border);
+    transition:background 0.15s;
+  }
+  .service-row:last-child { border-bottom:none; }
+  .service-row:hover { background:var(--card); }
+
+  .service-name { font-size:0.95rem; font-weight:500; }
+  .service-desc { font-size:0.78rem; color:var(--muted); margin-top:0.2rem; }
+
+  .service-price {
+    font-family:'Bebas Neue',sans-serif;
+    font-size:1.4rem; color:var(--accent); letter-spacing:0.05em;
+    white-space:nowrap; margin-left:1.5rem;
+  }
+
+  /* CONTACT */
+  .contact-box {
+    background:var(--card); border:1px solid var(--border);
+    padding:3rem; display:grid; grid-template-columns:1fr 1fr; gap:3rem;
+    align-items:center;
+  }
+
+  .contact-text h2 {
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(2rem,4vw,3rem); line-height:1; margin-bottom:1rem;
+  }
+
+  .contact-text p { font-size:0.88rem; color:var(--muted); line-height:1.8; }
+
+  .contact-links { display:flex; flex-direction:column; gap:0.8rem; }
+
+  .contact-item {
+    display:flex; align-items:center; gap:1rem;
+    padding:0.9rem 1.2rem; border:1px solid var(--border);
+    text-decoration:none; color:var(--white); font-size:0.85rem;
+    transition:border-color 0.2s;
+  }
+  .contact-item:hover { border-color:var(--accent); }
+  .contact-icon { font-size:1.1rem; }
+  .contact-label { font-size:0.72rem; color:var(--muted); }
+
+  /* FOOTER */
+  footer {
+    padding:2rem 2.5rem; border-top:1px solid var(--border);
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:1rem;
+    font-size:0.75rem; color:var(--muted);
+  }
+
+  .footer-logo {
+    font-family:'Bebas Neue',sans-serif;
+    font-size:1.2rem; color:var(--accent); letter-spacing:0.15em;
+  }
+
+  @keyframes up {
+    from { opacity:0; transform:translateY(16px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  @media (max-width:640px) {
+    nav { padding:1rem 1.2rem; }
+    .nav-links { display:none; }
+    .contact-box { grid-template-columns:1fr; padding:1.8rem; }
+    .wrap { padding:0 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">rubstrike</div>
+  <div class="nav-links">
+    <a href="#demos">Work</a>
+    <a href="#services">Services</a>
+    <a href="#contact">Contact</a>
+    <a class="nav-cta" href="https://www.fiverr.com/rubstrike" target="_blank">Hire me →</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag"><span></span> Available for work · Argentina</div>
+      <h1>WEB DEV<br>&amp; <em>AI-POWERED</em><br>SOLUTIONS</h1>
+      <p class="hero-sub">I build landing pages, chatbots, and custom web tools for small businesses. Fast delivery, clean design, real results.</p>
+      <div class="hero-btns">
+        <a class="btn-primary" href="#demos">See my work ↓</a>
+        <a class="btn-ghost" href="https://www.fiverr.com/rubstrike" target="_blank">Hire on Fiverr</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="divider"></div>
+
+<div class="wrap">
+  <section id="demos">
+    <div class="sec-label">Portfolio</div>
+    <div class="sec-title">LIVE DEMOS</div>
+    <div class="demos-grid">
+
+      <a class="demo-card" href="demo-barberia.html" target="_blank">
+        <div class="demo-tag">Landing Page</div>
+        <div class="demo-name">Local Business Site</div>
+        <div class="demo-desc">Full landing page for a barbershop — hero, services, booking form, reviews, and footer. Fully responsive.</div>
+        <div class="demo-link">View demo →</div>
+      </a>
+
+      <a class="demo-card" href="demo-chatbot.html" target="_blank">
+        <div class="demo-tag">Chatbot</div>
+        <div class="demo-name">Customer Service Bot</div>
+        <div class="demo-desc">Interactive chat widget with automated FAQ responses, quick reply buttons, and typing indicator.</div>
+        <div class="demo-link">View demo →</div>
+      </a>
+
+      <a class="demo-card" href="demo-linkinbio.html" target="_blank">
+        <div class="demo-tag">Link in Bio</div>
+        <div class="demo-name">Profile Page</div>
+        <div class="demo-desc">Stylish link-in-bio page with stats, featured content card, and animated profile ring. Works on mobile.</div>
+        <div class="demo-link">View demo →</div>
+      </a>
+
+    </div>
+  </section>
+</div>
+
+<div class="divider"></div>
+
+<div class="wrap">
+  <section id="services">
+    <div class="sec-label">What I offer</div>
+    <div class="sec-title">SERVICES</div>
+    <div class="services-list">
+      <div class="service-row">
+        <div>
+          <div class="service-name">Landing Page</div>
+          <div class="service-desc">Single-page site for your business — hero, services, contact form. Delivery in 2 days.</div>
+        </div>
+        <div class="service-price">From $25</div>
+      </div>
+      <div class="service-row">
+        <div>
+          <div class="service-name">Chatbot Widget</div>
+          <div class="service-desc">FAQ chatbot embedded in your site. Customized with your business info.</div>
+        </div>
+        <div class="service-price">From $20</div>
+      </div>
+      <div class="service-row">
+        <div>
+          <div class="service-name">Link in Bio Page</div>
+          <div class="service-desc">Custom profile page with all your links. Better than Linktree — yours forever.</div>
+        </div>
+        <div class="service-price">From $15</div>
+      </div>
+      <div class="service-row">
+        <div>
+          <div class="service-name">Web Tool / Calculator</div>
+          <div class="service-desc">Custom interactive tool — price calculator, quiz, form, or anything you need.</div>
+        </div>
+        <div class="service-price">From $35</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="divider"></div>
+
+<div class="wrap">
+  <section id="contact">
+    <div class="contact-box">
+      <div class="contact-text">
+        <h2>LET'S<br>WORK<br>TOGETHER</h2>
+        <p>Based in Argentina, working with clients worldwide. Fast responses, clear communication, and on-time delivery — every time.</p>
+      </div>
+      <div class="contact-links">
+        <a class="contact-item" href="https://www.fiverr.com/rubstrike" target="_blank">
+          <span class="contact-icon">💼</span>
+          <div>
+            <div>Hire me on Fiverr</div>
+            <div class="contact-label">fiverr.com/rubstrike</div>
+          </div>
+        </a>
+        <a class="contact-item" href="https://github.com/rubstrike" target="_blank">
+          <span class="contact-icon">⌥</span>
+          <div>
+            <div>GitHub</div>
+            <div class="contact-label">github.com/rubstrike</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="footer-logo">rubstrike</div>
+  <div>Web Developer & AI Solutions · Argentina</div>
+  <div>© 2025</div>
+</footer>
+
+</body>
+</html>
